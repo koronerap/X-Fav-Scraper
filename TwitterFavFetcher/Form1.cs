@@ -16,14 +16,15 @@ namespace TwitterFavFetcher
 {
     public partial class Form1 : Form
     {
-        Thread scrapeThread;
-
+        private int currentHeight = 0;
+        private Thread scrapeThread;
+        
         public Form1()
         {
             InitializeComponent();
             scrapeThread = new Thread(new ThreadStart(Loop));
             CheckForIllegalCrossThreadCalls = false;
-            statusLabel.Text = $"ThreadState: {scrapeThread.ThreadState}";
+            statusLabel.Text = $"Thread State: {scrapeThread.ThreadState}";
         }
 
         void Loop()
@@ -32,26 +33,22 @@ namespace TwitterFavFetcher
             {
                 this.BeginInvoke(new MethodInvoker(delegate
                 {
-                    statusLabel.Text = $"ThreadState: {scrapeThread.ThreadState}";
+                    statusLabel.Text = $"Thread State: {scrapeThread.ThreadState}";
                     _ = UpdateListAsync();
                 }));
                 Thread.Sleep(500);
             }
         }
 
-        int currentHeight = 0;
 
         private async Task UpdateListAsync()
         {
             string dom = await webView21.ExecuteScriptAsync("document.documentElement.outerHTML");
 
-            dom = Regex.Unescape(dom);
-            dom = dom.Remove(0, 1);
-            dom = dom.Remove(dom.Length - 1, 1);
+            dom = Regex.Unescape(dom).Remove(0, 1).Remove(dom.Length - 1, 1);
 
             var html = new HtmlAgilityPack.HtmlDocument();
             html.LoadHtml(dom);
-
 
             HtmlNodeCollection nodes = html.DocumentNode.SelectNodes("//span[contains(@class, 'css-1qaijid') and contains(@class, 'r-bcqeeo')]");
 
@@ -66,13 +63,7 @@ namespace TwitterFavFetcher
             currentHeight += (int)scrollNumericUpDown.Value;
             string s = await webView21.ExecuteScriptAsync("window.scrollTo(0, " + currentHeight + ");");
 
-            int visibleItems = listBox1.ClientSize.Height / listBox1.ItemHeight;
-            listBox1.TopIndex = Math.Max(listBox1.Items.Count - visibleItems + 1, 0);
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-
+            listBox1.TopIndex = Math.Max(listBox1.Items.Count - (listBox1.ClientSize.Height / listBox1.ItemHeight) + 1, 0);
         }
 
         private void goButton_Click(object sender, EventArgs e)
@@ -92,23 +83,21 @@ namespace TwitterFavFetcher
             sfd.DefaultExt = "txt";
             sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
-
             if(sfd.ShowDialog() == DialogResult.OK)
                 File.WriteAllLines(sfd.FileName, list);
-
         }
 
         private void startButton_Click(object sender, EventArgs e)
         {
+            currentHeight = 0;
             if (scrapeThread.ThreadState == ThreadState.WaitSleepJoin || scrapeThread.ThreadState == ThreadState.Running)
             {
                 scrapeThread.Abort();
                 startButton.Text = "Start";
-                startButton.BackColor = Color.LimeGreen;
+                startButton.BackColor = Color.Green;
             }
             else
             {
-                currentHeight = 0;
                 GC.SuppressFinalize(scrapeThread);
                 scrapeThread = new Thread(new ThreadStart(Loop));
                 scrapeThread.Start();
@@ -116,6 +105,15 @@ namespace TwitterFavFetcher
                 startButton.BackColor = Color.Red;
             }
         }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+            postUrlTextBox.Select();
+        }
+
+        private void postUrlTextBox_TextChanged(object sender, EventArgs e)
+        {
+            label3.Visible = postUrlTextBox.Text.Length == 0;
+        }
     }
 }
-//span.css-1qaijid.r-bcqeeo.r-qvutc0.r-poiln3
