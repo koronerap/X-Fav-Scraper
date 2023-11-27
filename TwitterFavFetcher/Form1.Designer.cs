@@ -42,10 +42,10 @@
             this.label1 = new System.Windows.Forms.Label();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.headerFillPanel = new System.Windows.Forms.Panel();
+            this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.label3 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.webView21)).BeginInit();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.scrollNumericUpDown)).BeginInit();
@@ -231,6 +231,17 @@
             this.headerFillPanel.Size = new System.Drawing.Size(931, 30);
             this.headerFillPanel.TabIndex = 6;
             // 
+            // label3
+            // 
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.label3.ForeColor = System.Drawing.Color.Gray;
+            this.label3.Location = new System.Drawing.Point(87, 6);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(500, 19);
+            this.label3.TabIndex = 9;
+            this.label3.Text = "https://twitter.com/{username}/status/{post id}";
+            this.label3.Click += new System.EventHandler(this.label3_Click);
+            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -265,17 +276,6 @@
             this.panel4.Size = new System.Drawing.Size(869, 732);
             this.panel4.TabIndex = 11;
             // 
-            // label3
-            // 
-            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label3.ForeColor = System.Drawing.Color.Gray;
-            this.label3.Location = new System.Drawing.Point(87, 6);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(500, 19);
-            this.label3.TabIndex = 9;
-            this.label3.Text = "https://twitter.com/{username}/status/{post id}";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -293,6 +293,7 @@
             this.MinimumSize = new System.Drawing.Size(1172, 862);
             this.Name = "Form1";
             this.Text = "X Fav Scraper";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.webView21)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

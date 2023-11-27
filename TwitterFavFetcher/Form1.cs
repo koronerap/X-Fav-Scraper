@@ -45,14 +45,14 @@ namespace TwitterFavFetcher
         {
             string dom = await webView21.ExecuteScriptAsync("document.documentElement.outerHTML");
 
-            dom = Regex.Unescape(dom).Remove(0, 1).Remove(dom.Length - 1, 1);
+            dom = Regex.Unescape(dom);
+            dom = dom.Remove(0, 1);
+            dom = dom.Remove(dom.Length - 1, 1);
 
             var html = new HtmlAgilityPack.HtmlDocument();
             html.LoadHtml(dom);
 
             HtmlNodeCollection nodes = html.DocumentNode.SelectNodes("//span[contains(@class, 'css-1qaijid') and contains(@class, 'r-bcqeeo')]");
-
-            int count = listBox1.Items.Count;
 
             foreach (HtmlNode node in nodes)
                 if (node.InnerText.StartsWith("@") && !listBox1.Items.Contains(node.InnerText))
@@ -61,14 +61,21 @@ namespace TwitterFavFetcher
             countLabel.Text = "Count: " + listBox1.Items.Count;
 
             currentHeight += (int)scrollNumericUpDown.Value;
-            string s = await webView21.ExecuteScriptAsync("window.scrollTo(0, " + currentHeight + ");");
+            await webView21.ExecuteScriptAsync("window.scrollTo(0, " + currentHeight + ");");
 
             listBox1.TopIndex = Math.Max(listBox1.Items.Count - (listBox1.ClientSize.Height / listBox1.ItemHeight) + 1, 0);
         }
 
         private void goButton_Click(object sender, EventArgs e)
         {
-            webView21.Source = new Uri(postUrlTextBox.Text);
+            try
+            {
+                webView21.Source = new Uri(postUrlTextBox.Text);
+            }
+            catch
+            {
+                MessageBox.Show("Invalid post URL!","Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
+            }
         }
 
         private void saveButton_Click(object sender, EventArgs e)
@@ -114,6 +121,19 @@ namespace TwitterFavFetcher
         private void postUrlTextBox_TextChanged(object sender, EventArgs e)
         {
             label3.Visible = postUrlTextBox.Text.Length == 0;
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                scrapeThread.Abort();
+                GC.SuppressFinalize(scrapeThread);
+            }
+            catch
+            {
+                //
+            }
         }
     }
 }
